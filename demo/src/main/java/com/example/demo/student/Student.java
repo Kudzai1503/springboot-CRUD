@@ -6,7 +6,7 @@ import java.time.Period;
 
 
 @Entity
-@Table
+@Table(name = "student")
 public class Student {
     @Id
     @SequenceGenerator(
@@ -18,9 +18,13 @@ public class Student {
             strategy = GenerationType.SEQUENCE,
             generator = "student_sequence"
     )
+    @Column(name = "id")
     private Long id;
+    @Column(name = "name")
     private String name;
+    @Column(name = "email")
     private String email;
+    @Column(name = "dob")
     private LocalDate dob;
 
     @Transient
