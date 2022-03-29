@@ -1,6 +1,7 @@
 package com.example.demo.student;
 
 import com.lowagie.text.Font;
+import com.lowagie.text.Image;
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
@@ -26,6 +27,7 @@ public class StudentPdfExporter {
         Font font = FontFactory.getFont(FontFactory.HELVETICA);
         font.setColor(Color.WHITE);
 
+
         cell.setPhrase(new Phrase("User ID", font));
         table.addCell(cell);
 
@@ -37,6 +39,10 @@ public class StudentPdfExporter {
 
         cell.setPhrase(new Phrase("D.O.B", font));
         table.addCell(cell);
+
+    }
+
+    private void writerTableHeading(PdfPTable table) {
 
     }
 
@@ -53,8 +59,10 @@ public class StudentPdfExporter {
 
         Document document = new Document(PageSize.A4);
         PdfWriter.getInstance(document, response.getOutputStream());
+        Image image = Image.getInstance("demo/src/main/resources/static/images/th.jpeg");
+        image.scaleAbsolute(100, 100);
+        image.setAlignment(Image.ALIGN_CENTER);
 
-        document.open();
         Font font = FontFactory.getFont(FontFactory.HELVETICA_BOLD);
         font.setSize(18);
         font.setColor(Color.BLUE);
@@ -62,17 +70,14 @@ public class StudentPdfExporter {
         Paragraph p = new Paragraph("List of Student", font);
         p.setAlignment(Paragraph.ALIGN_CENTER);
 
-        document.add(p);
-
         PdfPTable table = new PdfPTable(4);
         table.setWidthPercentage(100f);
-//        table.setWidths(new float[] {1.5f, 3.5f, 3.0f, 3.0f});
         table.setWidths(new int[]{2, 2, 2, 2});
         table.setSpacingBefore(10);
-
+        document.open();
+        document.add(image);
         writeTableHeader(table);
         writeTableData(table);
-
         document.add(table);
 
         document.close();
