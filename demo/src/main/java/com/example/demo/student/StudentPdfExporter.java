@@ -16,17 +16,20 @@ public class StudentPdfExporter {
 
     private List<Student> studentList;
 
+    private PdfPCell cell = new PdfPCell();
+
+
     public StudentPdfExporter(List<Student> studentList) {
         this.studentList = studentList;
     }
 
     private void writeTableHeader(PdfPTable table) {
-        PdfPCell cell = new PdfPCell();
         cell.setBackgroundColor(Color.BLUE);
-        cell.setPadding(5);
+        cell.setPadding(10);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cell.setVerticalAlignment(Element.ALIGN_CENTER);
         Font font = FontFactory.getFont(FontFactory.HELVETICA);
         font.setColor(Color.WHITE);
-
 
         cell.setPhrase(new Phrase("User ID", font));
         table.addCell(cell);
@@ -37,7 +40,7 @@ public class StudentPdfExporter {
         cell.setPhrase(new Phrase("E-mail", font));
         table.addCell(cell);
 
-        cell.setPhrase(new Phrase("D.O.B", font));
+        cell.setPhrase(new Phrase("Age", font));
         table.addCell(cell);
 
     }
@@ -47,18 +50,28 @@ public class StudentPdfExporter {
     }
 
     private void writeTableData(PdfPTable table) {
+        cell.setBackgroundColor(Color.white);
+        cell.setPadding(7f);
+        cell.setVerticalAlignment(Element.ALIGN_CENTER);
+        cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
         for (Student student : studentList) {
-            table.addCell(String.valueOf(student.getId()));
-            table.addCell(student.getName());
-            table.addCell(student.getEmail());
-            table.addCell(student.getDob().toString());
+            cell.setPhrase(new Phrase(String.valueOf(student.getId())));
+            table.addCell(cell);
+            cell.setPhrase(new Phrase(student.getName()));
+            table.addCell(cell);
+            cell.setPhrase(new Phrase(student.getEmail()));
+            table.addCell(cell);
+            cell.setPhrase(new Phrase(student.getAge().toString()));
+            table.addCell(cell);
         }
     }
 
     public void export(HttpServletResponse response) throws DocumentException, IOException {
 
         Document document = new Document(PageSize.A4);
+        Student student = new Student();
         PdfWriter.getInstance(document, response.getOutputStream());
+
         Image image = Image.getInstance("demo/src/main/resources/static/images/th.jpeg");
         image.scaleAbsolute(100, 100);
         image.setAlignment(Image.ALIGN_CENTER);
@@ -74,12 +87,16 @@ public class StudentPdfExporter {
         table.setWidthPercentage(100f);
         table.setWidths(new int[]{2, 2, 2, 2});
         table.setSpacingBefore(10);
+        PdfPTable table1 = new PdfPTable(1);
+        table1.setWidthPercentage(30);
+        table1.addCell(new Phrase("TOTAL = " + student.getName()));
+        table1.setHorizontalAlignment(Element.ALIGN_RIGHT);
         document.open();
         document.add(image);
         writeTableHeader(table);
         writeTableData(table);
         document.add(table);
-
+        document.add(table1);
         document.close();
 
 
