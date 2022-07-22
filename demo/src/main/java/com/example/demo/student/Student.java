@@ -3,6 +3,7 @@ package com.example.demo.student;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.Objects;
 
 
 @Entity
@@ -99,4 +100,16 @@ public class Student {
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Student)) return false;
+        Student student = (Student) o;
+        return Objects.equals(getId(), student.getId()) && Objects.equals(getName(), student.getName()) && Objects.equals(getEmail(), student.getEmail()) && Objects.equals(getDob(), student.getDob()) && Objects.equals(getAge(), student.getAge());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getName(), getEmail(), getDob(), getAge());
+    }
 }
