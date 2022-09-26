@@ -1,9 +1,9 @@
 package com.example.demo.student;
 
+import com.opencsv.bean.CsvBindByName;
+
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.Period;
-import java.util.Objects;
 
 
 @Entity
@@ -20,16 +20,22 @@ public class Student {
             generator = "student_sequence"
     )
     @Column(name = "id")
+    @CsvBindByName
     private Long id;
     @Column(name = "name")
+    @CsvBindByName
     private String name;
     @Column(name = "email")
+    @CsvBindByName
     private String email;
-    @Column(name = "dob")
-    private LocalDate dob;
-
-    @Transient
-    private Integer age;
+//    @Column(name = "dob")
+//    @CsvBindByName
+//    @CsvDate("yyyy-MM-dd")
+//    private LocalDate dob;
+//
+//    @Transient
+//    @CsvBindByName(column = "Age")
+//    private Integer age;
 
     public Student() {
     }
@@ -38,13 +44,13 @@ public class Student {
         this.id = id;
         this.name = name;
         this.email = email;
-        this.dob = dob;
+//        this.dob = dob;
     }
 
-    public Student(String name, String email, LocalDate dob) {
+    public Student(String name, String email) {
         this.name = name;
         this.email = email;
-        this.dob = dob;
+//        this.dob = dob;
 
     }
 
@@ -73,21 +79,21 @@ public class Student {
         this.email = email;
     }
 
-    public LocalDate getDob() {
-        return dob;
-    }
-
-    public void setDob(LocalDate dob) {
-        this.dob = dob;
-    }
-
-    public Integer getAge() {
-        return Period.between(this.dob, LocalDate.now()).getYears();
-    }
-
-    public void setAge(Integer age) {
-        this.age = age;
-    }
+//    public LocalDate getDob() {
+//        return dob;
+//    }
+//
+//    public void setDob(LocalDate dob) {
+//        this.dob = dob;
+//    }
+//
+//    public Integer getAge() {
+//        return Period.between(this.dob, LocalDate.now()).getYears();
+//    }
+//
+//    public void setAge(Integer age) {
+//        this.age = age;
+//    }
 
     @Override
     public String toString() {
@@ -95,21 +101,21 @@ public class Student {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
-                ", dob=" + dob +
-                ", age=" + age +
+//                ", dob=" + dob +
+//                ", age=" + age +
                 '}';
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Student)) return false;
-        Student student = (Student) o;
-        return Objects.equals(getId(), student.getId()) && Objects.equals(getName(), student.getName()) && Objects.equals(getEmail(), student.getEmail()) && Objects.equals(getDob(), student.getDob()) && Objects.equals(getAge(), student.getAge());
-    }
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (!(o instanceof Student)) return false;
+//        Student student = (Student) o;
+//        return Objects.equals(getId(), student.getId()) && Objects.equals(getName(), student.getName()) && Objects.equals(getEmail(), student.getEmail()) && Objects.equals(getDob(), student.getDob()) && Objects.equals(getAge(), student.getAge());
+//    }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getName(), getEmail(), getDob(), getAge());
-    }
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(getId(), getName(), getEmail(), getDob(), getAge());
+//    }
 }

@@ -61,7 +61,7 @@ public class StudentPdfExporter {
             table.addCell(cell);
             cell.setPhrase(new Phrase(student.getEmail()));
             table.addCell(cell);
-            cell.setPhrase(new Phrase(student.getAge().toString()));
+//            cell.setPhrase(new Phrase(student.getAge().toString()));
             table.addCell(cell);
         }
     }

@@ -11,16 +11,26 @@ import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.lowagie.text.DocumentException;
+import com.opencsv.CSVWriter;
+import com.opencsv.bean.CsvToBeanBuilder;
+import com.opencsv.bean.HeaderColumnNameTranslateMappingStrategy;
+import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 //@ApiOperation("Student Endpoint")
@@ -69,6 +79,56 @@ public class StudentController {
         StudentPdfExporter studentPdfExporter = new StudentPdfExporter(studentList);
 
         studentPdfExporter.export(response);
+    }
+
+    @GetMapping("/export/csv")
+    public void exportCSV(HttpServletResponse response) throws Exception {
+
+        String filename = "Student-List.csv";
+
+        response.setContentType("text/csv");
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"");
+        var writer = new StatefulBeanToCsvBuilder<Student>(response.getWriter())
+                .withQuotechar(CSVWriter.NO_QUOTE_CHARACTER)
+                .withSeparator(CSVWriter.DEFAULT_SEPARATOR)
+                .withOrderedResults(true)
+                .build();
+
+        writer.write(studentService.getStudents());
+    }
+
+    @PostMapping("/upload/csv")
+    public List<Student> uploadCSV(@RequestParam("csvFile") MultipartFile csvFile) throws Exception {
+        var mapping = new HashMap<String, String>();
+        mapping.put("name", "Name");
+        mapping.put("email", "Email");
+        mapping.put("id", "ID");
+
+        // HeaderColumnNameTranslateMappingStrategy
+        // for Student class
+        var strategy = new HeaderColumnNameTranslateMappingStrategy<Student>();
+        strategy.setType(Student.class);
+        strategy.setColumnMapping(mapping);
+
+        if (Objects.isNull(csvFile)) {
+            throw new IllegalArgumentException("csv file needed");
+        }
+        try (var reader = new BufferedReader(new InputStreamReader(csvFile.getInputStream()))) {
+            var studentList = new CsvToBeanBuilder<Student>(reader)
+                    .withType(Student.class)
+                    .withMappingStrategy(strategy)
+                    .build()
+                    .parse();
+            for (Student student : studentList) {
+                if (student.getId() == null) {
+                    studentService.addNewStudent(student);
+                } else {
+                    studentService.updateStudent(student.getId(), student.getName(), student.getEmail());
+                }
+            }
+            return studentList;
+        }
+
     }
 
     @GetMapping("/student/pdf")
